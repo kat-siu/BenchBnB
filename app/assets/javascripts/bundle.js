@@ -961,18 +961,26 @@ var _session_actions = __webpack_require__(148);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 document.addEventListener('DOMContentLoaded', function () {
-  var store = (0, _store2.default)();
 
-  // Testing on the window
-  window.getState = store.getState;
-  window.dispatch = store.dispatch;
-  // window.login = login;
-  // window.logout = logout;
-  // End of testing
+  var store = void 0;
+  if (window.currentUser) {
+    var preloadedState = { session: { currentUser: window.currentUser } };
+    store = (0, _store2.default)(preloadedState);
+    delete window.currentUser;
+  } else {
+    store = (0, _store2.default)();
+  }
 
   var root = document.getElementById('root');
   _reactDom2.default.render(_react2.default.createElement(_root2.default, { store: store }), root);
 });
+
+// const store = configureStore();
+
+// Testing on the window
+// window.getState = store.getState;
+// window.dispatch = store.dispatch;
+// End of testing
 
 /***/ }),
 /* 15 */
@@ -28871,6 +28879,8 @@ var _session_form_container = __webpack_require__(221);
 
 var _session_form_container2 = _interopRequireDefault(_session_form_container);
 
+var _route_util = __webpack_require__(224);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var App = function App() {
@@ -28887,8 +28897,8 @@ var App = function App() {
       ),
       _react2.default.createElement(_greeting_container2.default, null)
     ),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/login', component: _session_form_container2.default }),
-    _react2.default.createElement(_reactRouterDom.Route, { path: '/signup', component: _session_form_container2.default })
+    _react2.default.createElement(_route_util.AuthRoute, { path: '/login', component: _session_form_container2.default }),
+    _react2.default.createElement(_route_util.AuthRoute, { path: '/signup', component: _session_form_container2.default })
   );
 };
 
@@ -29132,6 +29142,44 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+
+/***/ }),
+/* 224 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.AuthRoute = undefined;
+
+var _react = __webpack_require__(4);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRouter = __webpack_require__(223);
+
+var _reactRedux = __webpack_require__(179);
+
+var _reactRouterDom = __webpack_require__(191);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Auth = function Auth(_ref) {
+  var Component = _ref.component,
+      path = _ref.path,
+      loggedIn = _ref.loggedIn;
+  return _react2.default.createElement(_reactRouterDom.Route, { path: path, render: function render(props) {
+      return !loggedIn ? _react2.default.createElement(Component, props) : _react2.default.createElement(_reactRouterDom.Redirect, { to: '/' });
+    } });
+};
+
+var mapStateToProps = function mapStateToProps(state) {
+  return { loggedIn: Boolean(state.session.currentUser) };
+};
+var AuthRoute = exports.AuthRoute = (0, _reactRouter.withRouter)((0, _reactRedux.connect)(mapStateToProps, null)(Auth));
 
 /***/ })
 /******/ ]);
